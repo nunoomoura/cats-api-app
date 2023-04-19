@@ -17,24 +17,28 @@ export default {
             this.updateSearchQuery(query);
             await this.fetchImages(query, 1);
         },
-        async fetchImages(tag, page) {
-            const response = await fetch(`${import.meta.env.VITE_APP_URL}:${import.meta.env.VITE_PORT}/api/v1/cats/filter?tag=${tag}&omit=0&total=10`);
-            const images = await response.json();
-            const imageUrls = images.map((image) => `https://cataas.com/cat/${image._id}`);
-            this.updateSearchResults(imageUrls);
-        },
         onPageChange(tag, page) {
             this.updateSearchResults([]);
             this.fetchImages(tag, page);
         },
         async fetchImages(tag, page) {
-            const response = await fetch(`${import.meta.env.VITE_APP_URL}:${import.meta.env.VITE_PORT}/api/v1/cats/filter?tag=${tag}&omit=${(page - 1) * 10}&total=10`);
-            const images = await response.json();
-            const imageUrls = images.map((image) => ({
+            console.log(tag)
+            console.log(page)
+            const response = await fetch(`${import.meta.env.VITE_APP_URL}:${import.meta.env.VITE_PORT}/api/v1/cats/filter?tag=${tag}&omit=${(page - 1) * 10}&total=10000`);
+            const json = await response.json();
+            const images = json.filteredResults
+            const totalResults = json.totalResults;
+            const totalPages = Math.ceil(totalResults / 10);
+            const imageUrls = images.slice((page - 1) * 10, page * 10).map((image) => ({
                 url: `https://cataas.com/cat/${image._id}`,
                 id: image._id
             }));
-            this.updateSearchResults(imageUrls);
+            const results = {
+                images: imageUrls,
+                totalPages: totalPages,
+                currentPage: page,
+            };
+            this.updateSearchResults(results);
         }
     },
 };
@@ -48,7 +52,9 @@ export default {
             :current-page="currentPage"
             :total-pages="totalPages"
             :alternate-searches="alternateSearches"
-            @page-change="onPageChange"
-            @results-update="updateSearchResults"></results-section>
+            :tag="searchQuery"
+            @page-change="(searchQuery, page) => onPageChange(searchQuery, page)"
+            @results-update="updateSearchResults"
+            ></results-section>
     </div>
 </template>

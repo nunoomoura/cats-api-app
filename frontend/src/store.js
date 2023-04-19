@@ -3,23 +3,25 @@ import { createStore } from 'vuex'
 const store = createStore({
   state: {
     searchResults: [],
-    searchQuery: ''
+    searchQuery: '',
+    currentPage: 1,
+    totalPages: 0,
   },
   mutations: {
-    updateSearchResults (state, results) {
-        state.searchResults = results
+    updateSearchResults(state, payload) {
+        state.searchResults = payload.images;
+        state.currentPage = payload.currentPage;
+        state.totalPages = payload.totalPages;
     },
     updateSearchQuery(state, payload) {
-        state.searchQuery = payload
+      state.searchQuery = payload;
     }
   },
   actions: {
     async fetchSearchResults ({ commit }, query) {
-      // make API call to fetch search results
-      const results = await api.fetchSearchResults(query)
-
-      // commit mutation to update the search results state
-      commit('updateSearchResults', results)
+      const results = await api.fetchSearchResults(query);
+      const totalPages = Math.ceil(results.length / 10);
+      commit('updateSearchResults', { results, totalPages });
     }
   }
 })

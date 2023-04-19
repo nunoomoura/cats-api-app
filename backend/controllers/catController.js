@@ -23,15 +23,15 @@ const filterCats = asyncHandler(async (req, res) => {
     }
 
     // and respond with information matching the filter tag
-    axios.get(`https://cataas.com/api/cats?tags=${tag}&skip=${omit}&limit=${total}`)
-    .then(response => {
-        res.json(response.data);
-    })
-    .catch(error => {
-      res.status(500)
-      throw new Error(error);
-    });
-})
+    const response = await axios.get(`https://cataas.com/api/cats?tags=${tag}&skip=0&limit=10000`);
+    const totalResults = response.data.length;
+    console.log(response)
+
+    const filteredResponse = await axios.get(`https://cataas.com/api/cats?tags=${tag}&skip=${omit}&limit=${total}`);
+    const filteredResults = filteredResponse.data;
+
+    res.json({ totalResults, filteredResults });
+  })
 
 const matchTag = asyncHandler(async (req, res) => {
     const { string } = req.query;

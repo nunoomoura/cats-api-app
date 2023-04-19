@@ -16,16 +16,37 @@ export default {
     alternateSearches: {
       type: Array,
       default: () => []
+    },
+    tag: {
+      type: String,
+      default: ''
+    }
+  },
+  computed: {
+    displayedImages() {
+      const start = (this.currentPage - 1) * 10;
+      const end = start + 10;
+      return this.catImages.slice(start, end);
     }
   },
   methods: {
+    onNextPageClick() {
+      if (this.currentPage < this.totalPages) {
+        this.$emit('page-change', this.tag, this.currentPage + 1);
+      }
+    },
+    onNextPageClick() {
+      if (this.currentPage < this.totalPages) {
+        this.$emit('page-change', this.tag, this.currentPage + 1);
+      }
+    },
     updateResults(images) {
-      console.log(images); // add this line
       this.$emit('results-update', images);
     }
   }
 };
 </script>
+
 
 <template>
   <div>
