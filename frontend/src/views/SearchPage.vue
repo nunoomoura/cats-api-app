@@ -1,3 +1,13 @@
+<template>
+    <div>
+        <search-section @update-query="onUpdateQuery"></search-section>
+        <results-section :cat-images="searchResults" :current-page="currentPage" :total-pages="totalPages"
+            :alternate-searches="alternateSearches" :tag="searchQuery"
+            @page-change="(searchQuery, page) => fetchImages(searchQuery, page)"
+            @search="(searchQuery) => fetchImages(searchQuery, 1)"></results-section>
+    </div>
+</template>
+
 <script>
 import SearchSection from '../components/SearchSection.vue';
 import ResultsSection from '../components/ResultsSection.vue';
@@ -17,19 +27,13 @@ export default {
             this.updateSearchQuery(query);
             await this.fetchImages(query, 1);
         },
-        onPageChange(tag, page) {
-            this.updateSearchResults([]);
-            this.fetchImages(tag, page);
-        },
         async fetchImages(tag, page) {
-            console.log(tag)
-            console.log(page)
             const response = await fetch(`${import.meta.env.VITE_APP_URL}:${import.meta.env.VITE_PORT}/api/v1/cats/filter?tag=${tag}&omit=${(page - 1) * 10}&total=10000`);
             const json = await response.json();
             const images = json.filteredResults
             const totalResults = json.totalResults;
             const totalPages = Math.ceil(totalResults / 10);
-            const imageUrls = images.slice((page - 1) * 10, page * 10).map((image) => ({
+            const imageUrls = images.slice(0, 10).map((image) => ({
                 url: `https://cataas.com/cat/${image._id}`,
                 id: image._id
             }));
@@ -43,18 +47,3 @@ export default {
     },
 };
 </script>
-
-<template>
-    <div>
-        <search-section @update-query="onUpdateQuery"></search-section>
-        <results-section 
-            :cat-images="searchResults"
-            :current-page="currentPage"
-            :total-pages="totalPages"
-            :alternate-searches="alternateSearches"
-            :tag="searchQuery"
-            @page-change="(searchQuery, page) => onPageChange(searchQuery, page)"
-            @results-update="updateSearchResults"
-            ></results-section>
-    </div>
-</template>
