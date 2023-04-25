@@ -5,15 +5,13 @@
         <img :src="catImage.url" :alt="catImage.id">
       </li>
     </ul>
-    <div>
+    <div v-if="totalPages > 0">
       <button @click="onPrevPageClick" :disabled="currentPage === 1">Prev Page</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
       <button @click="onNextPageClick" :disabled="currentPage === totalPages">Next Page</button>
     </div>
     <ul>
-      <li v-for="(tag, index) in alternateSearches" :key="index" @click="onTagClick(tag)">
-        {{ tag }}
-      </li>
+      <li v-for="tag in alternateSearches" :key="tag" @click="suggestClick(tag)">{{ tag }}</li>
     </ul>
   </div>
 </template>
@@ -59,6 +57,9 @@ export default {
       if (this.currentPage < this.totalPages) {
         this.$emit('page-change', this.tag, this.currentPage + 1);
       }
+    },
+    suggestClick(tag) {
+      this.$emit('suggested-query', tag);
     },
   }
 };
