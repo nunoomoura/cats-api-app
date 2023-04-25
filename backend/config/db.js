@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const Sequelize = new Sequelize(
+const sequelize = new Sequelize(
     process.env.MYSQL_DB || "nodejs",
     process.env.MYSQL_USER || "root",
     process.env.MYSQL_PASSWORD || "", {
@@ -13,3 +13,5 @@ sequelize.authenticate().then(() => {
 }).catch((error) => {
     console.error('Unable to connect to the database: ', error);
 });
+
+module.exports = sequelize

@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("searchresults", {
+    await queryInterface.createTable("searchqueries", {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -11,9 +11,11 @@ module.exports = {
       query: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
-      results: {
-        type: Sequelize.JSON,
+      count: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
         allowNull: false,
       },
       createdAt: {
@@ -30,6 +32,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("searchresults");
+    await queryInterface.dropTable("searchqueries");
   },
 };
