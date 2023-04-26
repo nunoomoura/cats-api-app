@@ -5,6 +5,7 @@ const {
     getTags,
     filterCats,
     matchTag,
+    stats
 } = require('../controllers/catController')
 
 // GET /api/v1/tags
@@ -15,5 +16,7 @@ router.get('/filter', filterCats);
   
 // GET api/v1/cats/match?string={{substr}}
 router.get('/match', matchTag);
+
+router.get('/stats', stats);
 
 module.exports = router

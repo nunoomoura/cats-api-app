@@ -60,6 +60,32 @@ const filterCats = asyncHandler(async (req, res) => {
   }
 });
 
+const stats = asyncHandler(
+  async (req, res) => {
+    try {
+      const topSearchQueries = await SearchQuery.findAll({
+        order: [['count', 'DESC']],
+        limit: 10,
+      });
+  
+      const topFoundCategories = await SearchResult.findAll({
+        attributes: [
+          'query',
+          [Sequelize.fn('COUNT', Sequelize.col('query')), 'count'],
+        ],
+        group: ['query'],
+        order: [[Sequelize.literal('count DESC')]],
+        limit: 10,
+      });
+  
+      res.render('stats', { topSearchQueries, topFoundCategories });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+)
+
 
 const matchTag = asyncHandler(async (req, res) => {
     const { string } = req.query;
@@ -81,5 +107,6 @@ const matchTag = asyncHandler(async (req, res) => {
 module.exports = {
     filterCats,
     getTags,
-    matchTag
+    matchTag,
+    stats
 }
